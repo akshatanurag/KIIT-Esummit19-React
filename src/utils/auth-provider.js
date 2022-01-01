@@ -17,19 +17,28 @@ const getTokenFromLocalStorage = async () => {
 const setTokenToLocalStorage = (token) =>
   window.localStorage.setItem(localStorageKey, token);
 
-const signup = ({ data, setDisplay }) => {
+const signup = async ({ data, setDisplay }) => {
+  setDisplay("loading");
   try {
-    setDisplay("loading");
-    client("signup", { data }).then(({ response: d }) => {
+    const { data: apiRes, response } = await client("signup", { data });
+    if (apiRes.success) {
       MySwal.fire(
         "Registration Successful",
         `A verification email has been sent to ${data.email}`,
         "success"
       ).then(() => window.location.assign("/login"));
-    });
+    }
+
+    // .then(({ response: d }) => {
+    //   MySwal.fire(
+    //     "Registration Successful",
+    //     `A verification email has been sent to ${data.email}`,
+    //     "success"
+    //   ).then(() => window.location.assign("/login"));
+    // });
   } catch (error) {
     setDisplay("idle");
-    MySwal.fire("Error.", error, "error");
+    MySwal.fire("Error.", error.message, "error");
   }
 };
 
